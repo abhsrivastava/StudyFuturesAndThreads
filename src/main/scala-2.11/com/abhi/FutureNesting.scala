@@ -5,9 +5,21 @@ import scala.concurrent.ExecutionContext.Implicits.global
 object FutureNesting extends App {
 
 
+   def testOnComplete(f: => Future[Unit]) : Unit = {
+      f.onComplete{_ => Thread.sleep(1000); println("oncomplete1");}
+      f.onComplete{_ =>  Thread.sleep(1000); println("oncomplete2");}
+      f.onComplete{_ =>  Thread.sleep(1000); println("oncomplete3");}
+      f.onComplete{_ =>  Thread.sleep(1000); println("oncomplete4");}
+      f.onComplete{_ =>  Thread.sleep(1000); println("oncomplete5");}
+      f.onComplete{_ =>  Thread.sleep(1000); println("oncomplete6");}
+      f.onComplete{_ =>  Thread.sleep(1000); println("oncomplete7");}
+      f.onComplete{_ =>  Thread.sleep(1000); println("oncomplete8");}
+      f
+   }
+
    def measureSingle(future: => Future[Unit]) : Future[Long] = {
       val start = System.currentTimeMillis
-      future map { _ =>
+      future map  { _ =>
          val end = System.currentTimeMillis
          end - start
       }
@@ -54,6 +66,11 @@ object FutureNesting extends App {
          scala.io.StdIn.readLine()
          lazy val x3 = Future{ println("+++ executing Future"); Thread.sleep(10000); println("woke up"); }
          measureNested(x3) map {case t => println(s"time taken $t"); println("completed with future nesting")}
+         scala.io.StdIn.readLine()
+      case 4 =>
+         scala.io.StdIn.readLine()
+         lazy val x4 = Future{ println("+++ executing Future"); Thread.sleep(10000); println("woke up"); }
+         testOnComplete(x4)
          scala.io.StdIn.readLine()
    }
 }
